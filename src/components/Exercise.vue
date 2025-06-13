@@ -3,6 +3,7 @@ import { ref, computed } from 'vue';
 import { shortAnswer } from "../consts/shortAnswer.ts";
 import Light from "../icons/Light.vue";
 import Dark from "../icons/Dark.vue";
+import Thinking from "../icons/Thinking.vue";
 
 // 简答题状态管理
 const shortAnswerIndex = ref(0); // 当前简答题索引
@@ -10,6 +11,7 @@ const currentShortAnswer = computed(() => shortAnswer[shortAnswerIndex.value]); 
 
 // 上一简答题
 const prevShortAnswer = () => {
+  isFlipped.value = true; // 切换卡片翻转状态
   if (shortAnswerIndex.value > 0) {
     shortAnswerIndex.value--;
   }
@@ -17,6 +19,7 @@ const prevShortAnswer = () => {
 
 // 下一简答题
 const nextShortAnswer = () => {
+  isFlipped.value = true; // 切换卡片翻转状态
   if (shortAnswerIndex.value < shortAnswer.length - 1) {
     shortAnswerIndex.value++;
   }
@@ -27,6 +30,14 @@ const isDarkMode = ref(false); // 是否为暗色模式
 
 const toggleDarkMode = () => {
   isDarkMode.value = !isDarkMode.value;
+};
+
+// 卡片翻转状态
+const isFlipped = ref(true); // 是否翻转
+
+// 切换卡片翻转状态
+const toggleFlip = () => {
+  isFlipped.value = !isFlipped.value;
 };
 </script>
 
@@ -47,8 +58,12 @@ const toggleDarkMode = () => {
     <!-- 简答题部分 -->
     <div class="short-answer-container">
       <div class="short-answer-question">{{ currentShortAnswer.question }}</div>
-      <div class="short-answer-answer">
-        <p>{{ currentShortAnswer.answer }}</p>
+      <div class="short-answer-answer" @click="toggleFlip">
+        <p v-if="!isFlipped">{{ currentShortAnswer.answer }}</p>
+        <div v-else class="thinking-mode">
+          <Thinking />
+          <span>答案是什么来着？</span>
+        </div>
       </div>
       <div class="controls">
         <button
@@ -242,5 +257,12 @@ const toggleDarkMode = () => {
 
 .dark-mode-btn:hover {
   transform: translateY(10px);
+}
+.thinking-mode {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 </style>
